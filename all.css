@@ -342,12 +342,27 @@ body {
     padding-bottom: 30px;
   }
 }
-.search-area {
+.search {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
   max-width: 920px;
   margin: 0 auto;
   padding: 50px 0;
+}
+
+@media (max-width: 768px) {
+  .search {
+    justify-content: center;
+  }
+}
+.search-area {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: start;
+  max-width: 720px;
+  min-width: 500px;
 }
 
 .search-area p {
@@ -356,12 +371,14 @@ body {
 
 @media (max-width: 768px) {
   .search-area {
+    width: 100%;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
   }
 }
 .regionSearch {
-  width: 27.5%;
+  width: 255px;
   min-height: 38px;
   text-indent: 0.5rem;
   color: #818a91;
