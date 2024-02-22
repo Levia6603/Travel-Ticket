@@ -14,11 +14,21 @@ const addTicketDescription = document.querySelector("#ticketDescription");
 let dataUrl =
   "https://raw.githubusercontent.com/hexschool/js-training/main/travelAPI-lv1.json";
 
+let regionSum = {};
+
 axios.get(dataUrl).then((res) => {
   ticketArea.innerHTML = "";
   res.data.forEach((el) => {
     update(el);
   });
+  res.data.forEach((el) => {
+    if (!regionSum[el.area]) {
+      regionSum[el.area] = 1;
+    } else {
+      regionSum[el.area] += 1;
+    }
+  });
+  renderC3(regionSum);
 });
 
 function update(obj) {
@@ -80,9 +90,11 @@ btnUpdate.addEventListener("click", () => {
     alert("請選擇套票地區");
   } else {
     update(obj);
+    regionSum[addTicketRegion.value] += 1;
     const cards = document.querySelectorAll(".ticketCard");
     searchResult.innerHTML = `本次搜尋共 ${cards.length} 筆資料`;
     resetForm();
+    renderC3(regionSum);
   }
 });
 
@@ -90,8 +102,11 @@ regionSelector.addEventListener("change", () => {
   const cards = document.querySelectorAll(".ticketCard");
   const ticketRegion = document.querySelectorAll(".ticketCard-region");
   cards.forEach((el) => el.classList.remove("card-hidden"));
+  let obj = {};
+  obj[regionSelector.value] = regionSum[regionSelector.value];
   let sum = 0;
   if (regionSelector.value != "") {
+    renderC3(obj);
     ticketRegion.forEach((el, i) => {
       if (el.textContent !== regionSelector.value) {
         cards[i].classList.add("card-hidden");
@@ -100,6 +115,32 @@ regionSelector.addEventListener("change", () => {
     });
     searchResult.innerHTML = `本次搜尋共 ${cards.length - sum} 筆資料`;
   } else {
+    renderC3(regionSum);
     searchResult.innerHTML = `本次搜尋共 ${cards.length} 筆資料`;
   }
 });
+
+function renderC3(obj) {
+  let chart = c3.generate({
+    bindto: ".chart",
+    data: {
+      columns: Object.entries(obj),
+      colors: {
+        台北: "#26C0C7",
+        台中: "#5151D3",
+        高雄: "#E68618",
+      },
+      type: "donut",
+    },
+    donut: {
+      width: 10,
+      label: {
+        show: false,
+      },
+    },
+    size: {
+      width: 200,
+      height: 200,
+    },
+  });
+}
